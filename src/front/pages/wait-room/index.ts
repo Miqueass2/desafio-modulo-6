@@ -5,18 +5,19 @@ class WaitPlayerPage extends HTMLElement{
    shadow: ShadowRoot = this.attachShadow({ mode: 'open' });
    
    connectedCallback() {
+      const currentState = state.getState();
+      
+      state.listenRoom(currentState.infoPlayers.rtdbRoomId);
+      
+      /* state.subscribe(() => {
+         this.render();
+      }); */
+      const dataLocal: any = localStorage.getItem("state");
+      const localData = JSON.parse(dataLocal);
+      
+      console.log("cs from wait-player", currentState);
+      console.log("Storage from wait-player", localData);
       this.render();
-      state.listenRoom();
-      state.subscribe(() => {
-         const currentState = state.getState();
-
-         const dataLocal:any = localStorage.getItem("state");
-         const localData = JSON.parse(dataLocal); 
-         console.log("Storage from wait-player",localData);
-
-         console.log("cs from wait-player",currentState);
-         
-      })
    }
    render() {
       const style = document.createElement("style");
@@ -65,9 +66,6 @@ class WaitPlayerPage extends HTMLElement{
       this.shadow.innerHTML = `
       <header class="header-container">
          <div class="header-container__div-p">
-            <div class="div-p__p">
-               <p class="parrafo">${userNameLocal}: ${localScore} </p>
-            </div>
             <div class="div-p__p2">
                <p class="parrafo">Sala</p>
                <p class="parrafo">${salaRoomId}</p>
@@ -82,20 +80,6 @@ class WaitPlayerPage extends HTMLElement{
       </div>
       <hands-component></hands-component>
       `;
-
-      setTimeout(() => {
-         
-         const dataLocal: any = localStorage.getItem("state");
-         
-         const localData = JSON.parse(dataLocal); 
-
-         console.log("LocalStorageData after add player from wait-player", localData);
-         
-         console.log("state storage from wait player; ",state.getState().infoPlayers);
-         console.log("playerOnline; ",state.getState().infoPlayers.userNamePlayerOnline);
-      },40000)
-      
-
       this.shadow.appendChild(style);
    }
 }

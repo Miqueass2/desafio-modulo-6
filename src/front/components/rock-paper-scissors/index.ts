@@ -20,6 +20,13 @@ class HandsComp extends HTMLElement{
 
             margin-top: 124px;
          }
+         .hands-instructions{
+            display: flex;
+               flex-direction: row;
+               justify-content: center;
+               gap:20px;
+               margin-top:50px;
+         }
          `
 
          this.shadow.innerHTML = `

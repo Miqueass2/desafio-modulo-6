@@ -193,19 +193,14 @@ app.get("/rooms/:roomId",(req,res)=>{
       });
 });
 
-
-/* PLAYER IS ONLINE ENDPOINT */
-//Aca hago un endpoint donde le envio el userid y el id del rtdbroomid 
+/* PLAYER START ENDPOINT */
+//Aca hago un endpoint donde le envio el userid local y el id del rtdbroomid 
 //Con esas dos datas, digo que en el rtdb cambie a true con la siguiente ruta:
 // rtdb.ref("rooms/" + rtdbRoomId + "/" + userId), Aca me dirijo a la room que me pasaron
-//y actualizo su estado start a true.
-app.post("/onlineplayers", (req, res) => {
-   const { userId } = req.body;
+//y actualizo su estado start a true del userisd pasado por body.
+app.post("/playerstart", (req, res) => {
    const { rtdbRoomId } = req.body;
-
-   /* ACA PUEDO PASARLE POR PARAMS BODY DEPENDIENDO QUE STATUS BOOLEAN TENGO, LO ACTUALIZA
-   EJ: const { status } = req.body;
-   roomRtdbRef.update({ start: status }); */
+   const { userId } = req.body;
    usersColecction.doc(userId.toString())
       .get()
       .then((idExists) => {
@@ -214,10 +209,10 @@ app.post("/onlineplayers", (req, res) => {
             //le seteo truen en la rtdb
             roomRtdbRef.update({ start: true })
                .then(() => {
-                  res.json({ message: "El jugador está online, true en rtdb" })
+                  res.json({messageOk: "El jugador está online, true en rtdb",})
                })
          } else {
-            res.status(401).json({ message: "No se encontró el usuario o no existe" })
+            res.status(401).json({ messageError: "No se encontró el usuario o no existe" })
          }
       });
 });

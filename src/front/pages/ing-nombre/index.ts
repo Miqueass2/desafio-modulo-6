@@ -5,66 +5,17 @@ class IngNombrePage extends HTMLElement{
    
    connectedCallback() {
       const currentState = state.getState();
+      state.subscribe(() => {
+         console.log("ingresar sala");
+         
+         this.render();
+         this.addListener()
+      })
       this.render()
+      this.addListener()
       
    }
-   render() { 
-      const style = document.createElement("style");
-      style.textContent = `
-      title-el{
-         justify-content: center;
-         align-items: center;
-         display: flex;
-      }
-      .container-input{
-         display: flex;
-         justify-content: center;
-         align-items: center;
-         flex-direction:column;
-      }
-      ::placeholder{
-         color:white;
-      }
-      .input-name{
-         width: 300px;
-         height: 65px;
-         font-size: 40px;
-         text-align: center;
-         margin-bottom: 15px;
-         color: white;
-         background: none;
-         border-left-style: none;
-         border-top-style: none;
-         border-right-style: none;
-         border-bottom-color: cadetblue;
-         border-radius: 8px;
-         border-bottom-width: 4px;
-      }
-      .input-name:focus{
-         outline:none
-      }
-      .title-name{
-         text-align: center;
-         color: white;
-         font-size: 49px;
-         margin: 0;
-      }
-      .button{
-         background: transparent;
-         border: none;
-      }
-      `
-      this.shadow.innerHTML = `
-      <title-el></title-el>
-      <h3 class="title-name">Tu Nombre</h3>
-      <form class="container-input">
-         <input type="text" class="input-name" name="nombre"/>
-
-         <button class="button">
-            <button-comp class="title-ing-sala"></button-comp>
-         </button>
-      </form>
-      `;
+   addListener() {
       const letsStart = this.shadow.querySelector(".title-ing-sala")!;
       
       const shadowIngSala = letsStart?.shadowRoot?.children[0]!;
@@ -125,7 +76,7 @@ class IngNombrePage extends HTMLElement{
                            /* escucho ese roomLong.. lo que trae dentro */
                            state.listenRoom(rtdbRoomId);
                            //direcciono a la sala de espera.
-                           Router.go("/waitplayer")
+                           Router.go("/waitroom")
                         })
                      };
                   });
@@ -133,6 +84,65 @@ class IngNombrePage extends HTMLElement{
             });
          };
       });
+   }
+   render() { 
+      const style = document.createElement("style");
+      style.textContent = `
+      title-el{
+         justify-content: center;
+         align-items: center;
+         display: flex;
+      }
+      .container-input{
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         flex-direction:column;
+      }
+      ::placeholder{
+         color:white;
+      }
+      .input-name{
+         width: 300px;
+         height: 65px;
+         font-size: 40px;
+         text-align: center;
+         margin-bottom: 15px;
+         color: white;
+         background: none;
+         border-left-style: none;
+         border-top-style: none;
+         border-right-style: none;
+         border-bottom-color: cadetblue;
+         border-radius: 8px;
+         border-bottom-width: 4px;
+      }
+      .input-name:focus{
+         outline:none
+      }
+      .title-name{
+         text-align: center;
+         color: white;
+         font-size: 49px;
+         margin: 0;
+      }
+      .button{
+         background: transparent;
+         border: none;
+      }
+      `
+      this.shadow.innerHTML = `
+      <title-el></title-el>
+      <h3 class="title-name">Tu Nombre</h3>
+      <form class="container-input">
+         <input type="text" class="input-name" name="nombre"/>
+
+         <button class="button">
+            <button-comp class="title-ing-sala"></button-comp>
+         </button>
+      </form>
+      `;
+      
       this.shadow.appendChild(style);
    };
 };

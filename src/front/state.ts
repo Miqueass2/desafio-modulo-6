@@ -18,8 +18,8 @@ const state = {
          rtdbRoomId: "",
          userNamePlayerOnline:"",
          userIdPlayerOnline: "",
-         userLocalOnline:false,
-         userPlayerOnline:false,
+         startPlayerLocal: "",
+         startPlayerOnline:"",
          dataFromServerDb:[]
       },
       currentGameChoices: {
@@ -36,6 +36,12 @@ const state = {
    //Y DESDE LOS COMPONENTES O PAGES PODEMOS MANIPULAR LOS DATOS GRACIAS AL STATE
    
    init() {
+      //QUITAR ESTO MAS ADELANTE
+      /* const cs = this.getState();
+      cs.infoPlayers.startPlayerLocal = ""
+      cs.infoPlayers.startPlayerOnline = "" */
+      /* this.setState(cs); */
+      //      
       console.log("data",this.data)
       
       const dataLocal:any = localStorage.getItem("state");
@@ -45,7 +51,6 @@ const state = {
       }
       const localData = JSON.parse(dataLocal); 
       console.log("dataStorage antes de set",localData);
-      
       this.setState(localData);
       /* this.listenRoom(); */
 
@@ -57,7 +62,7 @@ const state = {
    listenRoom(rtdbRoomId?) {
       const cs = this.getState();
       const roomsRef = rtdb.ref(`/rooms/${rtdbRoomId}`);
-      roomsRef.on("value", async (snapshot) => {
+      roomsRef.on("value", (snapshot) => {
          const snapshotData = snapshot.val();
          /* console.log("messages",messagesFromServer); */
          const snapshotFromServer = map(snapshotData)
@@ -68,13 +73,14 @@ const state = {
          console.log("Data from rtdb", cs.infoPlayers.dataFromServerDb);
          
          console.log("lenght",cs.infoPlayers.dataFromServerDb.length)
-         /*  if (location.pathname == "/waitplayer" && cs.infoPlayers.dataFromServerDb.length == 2) {
+         if (location.pathname == "/waitroom") {
             this.connectedTwoPlayers();
-         } */
+         }
          
       }); 
       const dataLocal:any = localStorage.getItem("state");
       const localData = JSON.parse(dataLocal); 
+      this.setState(cs);
       console.log("dataStorage desde listenroom",localData);
       
    },
@@ -101,23 +107,15 @@ const state = {
       cs.infoPlayers.userId = userId;
       this.setState(cs);
    },
-   setNameOnlinePlayer(name:string) {
+   setNameOnlinePlayer(nameOnline:string) {
       const cs = this.getState();
-      cs.infoPlayers.userNamePlayerOnline = name;
+      cs.infoPlayers.userNamePlayerOnline = nameOnline;
       this.setState(cs);
-      console.log("name Online setted", cs.infoPlayers.userNamePlayerOnline);
-      console.log("state despues de set name",cs);
-      
-      
    },
-   setUserIdOnlinePlayer(userId:string) {
+   setUserIdOnlinePlayer(userIdOnline:string) {
       const cs = this.getState();
-      cs.infoPlayers.userIdPlayerOnline = userId;
+      cs.infoPlayers.userIdPlayerOnline = userIdOnline;
       this.setState(cs);
-      console.log("userIdOnline setted ", cs.infoPlayers.userIdPlayerOnline);
-      console.log("state despues del set userIdOnline,",cs);
-      
-      
    },
    createUser(newUser?) {
       return fetch(API_BASE_URL + "/signup", {
@@ -211,14 +209,61 @@ const state = {
       }
    },
    connectedTwoPlayers() {
-      const currenState = state.getState();
-      const csUserName = currenState.infoPlayers.userName;
-      const csUserNameOnline = currenState.infoPlayers.userNamePlayerOnline;
-      console.log("Length from connecttwoplayers", currenState.infoPlayers.dataFromServerDb.length)
-      console.log("userNameLocal",csUserName);
-      console.log("userNameOnline",csUserNameOnline);
+      const currenState = this.getState();
+      if (currenState.infoPlayers.dataFromServerDb.length == 2) {
+         Router.go("/instructions")
+      }
    },
-   
+   setRtdbPlayerStart() {
+      const cs = this.getState();
+      const rtdbRoom = cs.infoPlayers.rtdbRoomId;
+      const userId = cs.infoPlayers.userId;
+      const userIdOnline = cs.infoPlayers.userId;
+      const usersId = userId || userIdOnline;
+      const dataSet = {
+         rtdbRoom,
+         usersId
+      }
+      
+         return fetch(API_BASE_URL + "/playerstart", {
+            method: "post",
+            headers: {
+               "content-type": "application/json",
+            },
+            body: JSON.stringify(dataSet)
+         });
+         /* .then((res) => res.json())
+         .then((finalRes)=>{return finalRes}) */
+      
+   }
+   ,
+   playersStart(statusBoolean:boolean) {
+      const cs = this.getState();
+      const localPlayer = cs.infoPlayers.userName;
+      const onlinePlayer = cs.infoPlayers.userNamePlayerOnline;      
+      if (localPlayer !== "" && statusBoolean === true) {
+         cs.infoPlayers.startPlayerLocal = statusBoolean;
+         /* this.setState(cs) */
+         /* if (location.pathname !== "/waitingplayer") return;
+         if (location.pathname === "/waitingplayer") {
+         } */
+         Router.go("/play");
+         console.log("bolean play1",cs.infoPlayers.startPlayerLocal);
+         
+      }
+      if (onlinePlayer !== "" && statusBoolean === true) {
+         cs.infoPlayers.startPlayerOnline = statusBoolean;
+         /* this.setState(cs) */
+         /* if (location.pathname !== "/waitingplayer") return;
+         if (location.pathname === "/waitingplayer") {
+         } */
+         Router.go("/play");
+         console.log("bolean play2",cs.infoPlayers.startPlayerOnline);
+
+      }
+      console.log("Soy statepLAYERSSTART",cs.infoPlayers);
+      this.setState(cs)
+   },
    // CON EL SUBSCRIBE ES COMO UN EVENTO, ESCUCHAMOS LOS CAMBIOS Y LO GUARDAMOS EN EL LISTENER
    subscribe(callback: (any) => any) {
       //callback si o si debe pasar una funcion como parámetro

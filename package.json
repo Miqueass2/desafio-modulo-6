@@ -7,6 +7,7 @@
     "@types/node": "^18.11.9",
     "@vaadin/router": "^1.7.4",
     "body-parser": "^1.20.1",
+    "concurrently": "^7.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
@@ -20,6 +21,7 @@
   "scripts": {
     "dev:front": "parcel serve ./src/front/index.html --port 1250",
     "dev:back": "nodemon --watch './src/back/index.ts' --exec 'ts-node ./src/back/dev.ts'",
+    "dev":"npx concurrently 'yarn dev:front' 'yarn dev:back' ",
     "build:front": "parcel build ./src/front/index.html",
     "build:back": "tsc",
     "build": "yarn build:front && yarn build:back",
