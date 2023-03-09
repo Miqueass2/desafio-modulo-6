@@ -118,6 +118,8 @@ const state = {
       this.setState(cs);
    },
    createUser(newUser?) {
+      console.log("API_BASE_URL:::",API_BASE_URL + "/signup");
+      
       return fetch(API_BASE_URL + "/signup", {
          method: "post",
          headers: { "content-type": "application/json" },
