@@ -9,13 +9,14 @@ class ingresarSalaPage extends HTMLElement {
       console.log("Soy cs desde connnectedCallback init",cs);
       state.listenRoom(/* cs.infoPlayers.rtdbRoomId */);
       
-      /* state.subscribe(() => {
+      state.subscribe(() => {
+         console.log("state:::ing-sala",cs);
          
          this.render()
          this.addListener();
          
          
-      }); */
+      });
       this.render();
       this.addListener();
       

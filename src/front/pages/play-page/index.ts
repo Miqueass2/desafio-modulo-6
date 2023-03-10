@@ -1,5 +1,5 @@
 import { state } from "../../state";
-import { Route } from "@vaadin/router";
+import { Router } from "@vaadin/router";
 class PlayPageRoom extends HTMLElement {
    shadow: ShadowRoot = this.attachShadow({ mode: 'open' });
 

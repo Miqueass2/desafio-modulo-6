@@ -1,17 +1,23 @@
 import { state } from "../../state";
-import { Route } from "@vaadin/router";
+import { Router } from "@vaadin/router";
 class WaitingPlayerStart extends HTMLElement {
    shadow: ShadowRoot = this.attachShadow({ mode: 'open' });
 
    connectedCallback() {
       const cs = state.getState();
-      /* state.listenRoom(cs.infoPlayers.rtdbRoomId); */
-      state.listenRoom();
-      /* state.subscribe(() => {
+      state.listenRoom(cs.infoPlayers.rtdbRoomId);
+
+      localStorage.removeItem('firebase:previous_websocket_failure');
+      if (cs.infoPlayers.dataFromServerDb[0].start === true && cs.infoPlayers.dataFromServerDb[1].start === true) {
+         Router.go("/play")
+      }
+
+      state.subscribe(() => {
          this.render();
-      }); */
-         this.render();
+      })
+      this.render();
    }
+
    render() { 
       const style = document.createElement("style");
       style.textContent =`
@@ -74,6 +80,8 @@ class WaitingPlayerStart extends HTMLElement {
 
 
       `;
+      
+      
 
       this.shadow.appendChild(style);
    }

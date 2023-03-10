@@ -16,6 +16,7 @@ const state = {
          userId: "",
          roomId: "",
          rtdbRoomId: "",
+         playersReady:false,
          userNamePlayerOnline:"",
          userIdPlayerOnline: "",
          startPlayerLocal: "",
@@ -76,6 +77,7 @@ const state = {
          if (location.pathname == "/waitroom") {
             this.connectedTwoPlayers();
          }
+         console.log("hi");
          
       }); 
       const dataLocal:any = localStorage.getItem("state");
@@ -218,55 +220,69 @@ const state = {
          Router.go("/instructions")
       }
    },
-   setRtdbPlayerStart() {
+   /* async checkTwoPlayers() {
+      const cs = this.getState(); 
+      const rtdbIdRoom = cs.infoPlayers.rtdbRoomId;
+      
+      const dataServer = cs.infoPlayers.dataFromServerDb;
+      console.log("soy data server",dataServer);
+      
+
+
+      if (dataServer[0].start === true && dataServer[1].start == false) {
+         return "hi";
+      }
+      if (dataServer[0].start == false && dataServer[1].start == true) {
+         return this.waitingForOpponent(dataServer[0].name, false);
+      }
+      if (dataServer[0].start == true && dataServer[1].start == false) {
+         return this.waitingForOpponent(dataServer[1].name, false);
+      }
+      if (dataServer[0].start == true && dataServer[1].start == true) {
+         return this.waitingForOpponent("start", true);
+      }
+   },
+   async waitingForOpponent(name: string, bothReady: boolean) {
       const cs = this.getState();
-      const rtdbRoom = cs.infoPlayers.rtdbRoomId;
-      const userId = cs.infoPlayers.userId;
-      const userIdOnline = cs.infoPlayers.userId;
-      const usersId = userId || userIdOnline;
-      const dataSet = {
-         rtdbRoom,
-         usersId
+      if (bothReady === true) {
+         cs.infoPlayers.playersReady = bothReady;
       }
       
+   }
+   , */
+   async setRtdbPlayerStartOnline() {
+      const cs = this.getState();
+      const rtdbRoom = cs.infoPlayers.rtdbRoomId;
+      const userIdOlnine = cs.infoPlayers.userIdPlayerOnline;
+
+      const dataUpdate = {
+         rtdbRoomId: rtdbRoom,
+         userId: userIdOlnine,
+      }
          return fetch(API_BASE_URL + "/playerstart", {
             method: "post",
             headers: {
                "content-type": "application/json",
             },
-            body: JSON.stringify(dataSet)
-         });
-         /* .then((res) => res.json())
-         .then((finalRes)=>{return finalRes}) */
-      
-   }
-   ,
-   playersStart(statusBoolean:boolean) {
+            body: JSON.stringify(dataUpdate)
+         })
+   },
+   async setRtdbPlayerStart() {
       const cs = this.getState();
-      const localPlayer = cs.infoPlayers.userName;
-      const onlinePlayer = cs.infoPlayers.userNamePlayerOnline;      
-      if (localPlayer !== "" && statusBoolean === true) {
-         cs.infoPlayers.startPlayerLocal = statusBoolean;
-         /* this.setState(cs) */
-         /* if (location.pathname !== "/waitingplayer") return;
-         if (location.pathname === "/waitingplayer") {
-         } */
-         Router.go("/play");
-         console.log("bolean play1",cs.infoPlayers.startPlayerLocal);
-         
+      const rtdbRoom = cs.infoPlayers.rtdbRoomId;
+      const usersId = cs.infoPlayers.userId
+      
+      const dataUpdate = {
+         rtdbRoomId: rtdbRoom,
+         userId: usersId,
       }
-      if (onlinePlayer !== "" && statusBoolean === true) {
-         cs.infoPlayers.startPlayerOnline = statusBoolean;
-         /* this.setState(cs) */
-         /* if (location.pathname !== "/waitingplayer") return;
-         if (location.pathname === "/waitingplayer") {
-         } */
-         Router.go("/play");
-         console.log("bolean play2",cs.infoPlayers.startPlayerOnline);
-
-      }
-      console.log("Soy statepLAYERSSTART",cs.infoPlayers);
-      this.setState(cs)
+         return fetch(API_BASE_URL + "/playerstart", {
+            method: "post",
+            headers: {
+               "content-type": "application/json",
+            },
+            body: JSON.stringify(dataUpdate)
+         })
    },
    // CON EL SUBSCRIBE ES COMO UN EVENTO, ESCUCHAMOS LOS CAMBIOS Y LO GUARDAMOS EN EL LISTENER
    subscribe(callback: (any) => any) {

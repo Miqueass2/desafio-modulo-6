@@ -12,25 +12,10 @@ class InstructionsPage extends HTMLElement{
       console.log("desde page instructions");
       
       const cs = state.getState();
-      console.log("antes de dar a jugar: STATE:::",cs);
+      state.listenRoom(cs.infoPlayers.rtdbRoomId)
+      console.log("antes de dar a jugar: STATE:::", cs);
       
-      /* state.listenRoom(cs.infoPlayers.rtdbRoomId); */
-      state.listenRoom();
-      /* state.subscribe(() => {
-         const cs = state.getState();
-         this.addListeners();
-         this.render();
-         this._localName = currenState.infoPlayers.userName;
-         this._playerOnlineName = currenState.infoPlayers.userNamePlayerOnline;
-         
-      }); */
-      this.addListeners();
       this.render();
-   }
-   addListeners() {
-      console.log("soy listeners");
-      
-      
    }
    render() {
       const style = document.createElement("style");
@@ -100,28 +85,19 @@ class InstructionsPage extends HTMLElement{
          <hands-component class="hands"></hands-component>
 
       `;
-
       const letsStart = this.shadow.querySelector(".title-jugar")!;
       const shadowIngSala = letsStart?.shadowRoot?.children[0]!;
-
-
       shadowIngSala.textContent = "¡Jugar!";
-
+      
       const cs = state.getState();
+
       console.log("antes del eventlsitener STATE:::",cs);
-      shadowIngSala.addEventListener("click",async (e) => {
+      shadowIngSala.addEventListener("click", async (e) => {
          e.preventDefault();
-         const cs = state.getState();
-         const startPlays:any = state.playersStart(true);
-         
-         console.log("state",cs);
-         console.log("sete starts en la rtdbroom");
-         state.setRtdbPlayerStart();
-         
-         console.log("imstartsplay",startPlays);
-         console.log("state afterSet",cs);
-         
-         Router.go("/waitingplayer")
+         await state.setRtdbPlayerStart();
+         await state.setRtdbPlayerStartOnline();
+         Router.go("/waitingplayer");
+         /* location.reload(); */
       });
          const handsStyle = this.shadow.querySelector(".hands");
          const shadowHands = handsStyle?.shadowRoot?.children[0]!;

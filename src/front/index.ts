@@ -14,6 +14,8 @@ import "./pages/play-page/index";
 import "./router";
 
 (function () { 
+   localStorage.removeItem('firebase:previous_websocket_failure');
+
    state.init();
    titleComponent();
    buttonComponent();

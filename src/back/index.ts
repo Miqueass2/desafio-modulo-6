@@ -207,10 +207,11 @@ app.post("/playerstart", (req, res) => {
          if (idExists.exists) {
             const roomRtdbRef = rtdb.ref(`rooms/${rtdbRoomId}/${userId}`);
             //le seteo truen en la rtdb
-            roomRtdbRef.update({ start: true })
-               .then(() => {
-                  res.json({messageOk: "El jugador está online, true en rtdb",})
-               })
+               roomRtdbRef.update({ start: true })
+                  .then(() => {
+                     res.json({messageOk: "El jugador está online, true en rtdb",})
+                  })
+             
          } else {
             res.status(401).json({ messageError: "No se encontró el usuario o no existe" })
          }
