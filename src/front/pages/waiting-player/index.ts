@@ -2,23 +2,40 @@ import { state } from "../../state";
 import { Router } from "@vaadin/router";
 class WaitingPlayerStart extends HTMLElement {
    shadow: ShadowRoot = this.attachShadow({ mode: 'open' });
-
+   localPlayer: string;
+   onlinePlayer: string
+   roomId: number;
+   statusPlayerLocal: boolean;
    connectedCallback() {
       const cs = state.getState();
       state.listenRoom(cs.infoPlayers.rtdbRoomId);
-
+      
       localStorage.removeItem('firebase:previous_websocket_failure');
-      if (cs.infoPlayers.dataFromServerDb[0].start === true && cs.infoPlayers.dataFromServerDb[1].start === true) {
-         Router.go("/play")
-      }
-
+      
       state.subscribe(() => {
+         const cs = state.getState();
+         this.localPlayer = cs.infoPlayers.userName;
+         this.onlinePlayer = cs.infoPlayers.userNamePlayerOnline;
+         this.roomId = cs.infoPlayers.roomId;
+         this.statusPlayerLocal = cs.infoPlayers.startPlayerLocal;
          this.render();
-      })
+         
+      });
+      this.localPlayer = cs.infoPlayers.userName;
+      this.onlinePlayer = cs.infoPlayers.userNamePlayerOnline
+      this.roomId = cs.infoPlayers.roomId;
+      this.statusPlayerLocal = cs.infoPlayers.startPlayerLocal;
       this.render();
    }
 
    render() { 
+      console.log("RENDER DESDE WAITING PLAYER::::");
+      
+      console.log("localPl",this.localPlayer);
+      console.log("OnlinePl",this.onlinePlayer);
+      console.log("RoomID",this.roomId);
+      console.log("statusPlayerLocal",this.statusPlayerLocal);
+      
       const style = document.createElement("style");
       style.textContent =`
 
@@ -51,28 +68,28 @@ class WaitingPlayerStart extends HTMLElement {
       }
       `
       const cs = state.getState();
-      const salaRoomId = cs.infoPlayers.roomId;
+      /* const salaRoomId = cs.infoPlayers.roomId;
       
       const nameLocal = cs.infoPlayers.userName
-      const namePlayerOnline = cs.infoPlayers.userNamePlayerOnline
-
+      const namePlayerOnline = cs.infoPlayers.userNamePlayerOnline*/
       const localScore = cs.score.localPlayer;
       const onlinePlayerScore = cs.score.onlinePlayer;
+      
       this.shadow.innerHTML = `
       <header class="header">
          <div class="header__names">
-            <h3 class="header__names-title">${nameLocal}: ${localScore}</h3>
-            <h3 class="header__names-title">${namePlayerOnline}: ${onlinePlayerScore}</h3>
+            <h3 class="header__names-title">${this.localPlayer}: ${localScore}</h3>
+            <h3 class="header__names-title">${this.onlinePlayer}: ${onlinePlayerScore}</h3>
          </div>
          <div class="room">
             <h3 class="title_sala">Sala</h3>
-            <p class="title_sala"> ${salaRoomId}</p>
+            <p class="title_sala"> ${this.roomId}</p>
          </div>
       </header>
       <div class="title-container">
          <h1 class="title-container__title">Esperando a que
          ${
-            namePlayerOnline ? namePlayerOnline : nameLocal
+            this.statusPlayerLocal == true ? this.onlinePlayer : this.localPlayer
          } presione ¡Jugar!...</h1>
       </div>
 

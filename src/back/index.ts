@@ -3,7 +3,7 @@ import * as express from "express";
 import { nanoid } from "nanoid";
 import * as cors from "cors";
 import * as bodyParser from "body-parser";
-const port = process.env.PORT || 2200;
+const port = process.env.PORT || 3000;
 const app = express();
 
 app.use(express.json());
@@ -60,14 +60,20 @@ app.post("/auth", (req, res) => {
       .get()
       .then((responseSearch) => {         
          if (responseSearch.empty) {
-            res.status(400).json({
-               message: "El nombre ingresado no existe",
-            });
-         } else {
-            res.json({
-               //esto devulve el id de usersCollection
-               id: responseSearch.docs[0].id
+            usersColecction.add({
+               name: name,
             })
+               .then((authUser) => {
+                  res.json({
+                  //esto devulve el id de usersCollection
+                     id: authUser.id,
+                     new:true
+               })
+               });
+            } else {
+               res.status(200).json({
+                  message: "El nombre ingresado ya existe",
+               });
             /* console.log("soy responseSearch",responseSearch.docs[0].id); */
          };
       });
@@ -146,7 +152,7 @@ app.post("/addplayer",(req,res)=>{
                [userId]: {
                   userId: userId,
                   name: name,
-                  choice: "",
+                  choiceOnline: "",
                   online: true,
                   start: false,
                }
@@ -179,7 +185,7 @@ app.get("/rooms/:roomId",(req,res)=>{
          if (snapshot.exists) {
             roomsColecction.doc(roomId).get().then(snap => {
                if (snap.exists) {
-                  const data = snap.data()
+                  const data = snap.data();
                   //ACA EN DATA ESTA EL NANO ID QUE LO VI POR LOG
                   console.log("soy data room/:roomId ",data);
                   res.json(data)
@@ -209,9 +215,8 @@ app.post("/playerstart", (req, res) => {
             //le seteo truen en la rtdb
                roomRtdbRef.update({ start: true })
                   .then(() => {
-                     res.json({messageOk: "El jugador está online, true en rtdb",})
+                     res.json({messageOk: "El jugador está online, true en rtdb", true:true})
                   })
-             
          } else {
             res.status(401).json({ messageError: "No se encontró el usuario o no existe" })
          }
@@ -250,26 +255,54 @@ app.post("/creategame", (req, res) => {
 //Acá mando a la rtdbRoom lo que cada uno eligio , si piedra papel o tijera..
 
 app.post("/choices", (req, res) => {
-   const { userId } = req.body;
-   const { rtdbRoomId } = req.body;
-   const { choice } = req.body;
-   /*    chequeo si existe el id para ir permitir modificar la rtdbroomid 
-   y setearle lo que eligió*/
-   usersColecction.doc(userId.toString())
+  const { userId } = req.body;
+  const { rtdbRoomId } = req.body;
+  const { choice } = req.body;
+  /*    chequeo si existe el id para ir permitir modificar la rtdbroomid 
+  y setearle lo que eligió*/
+  
+  usersColecction.doc(userId.toString())
       .get()
       .then((idExists) => {
-         if (idExists.exists) {
+        	if (idExists.exists) {
             const rtdbRoomRef = rtdb.ref(`rooms/${rtdbRoomId}/${userId}`);
+						
             rtdbRoomRef.update({
                //le pasa por params lo que eligio el jugador
-               choice: choice,
+              choice: choice,
             })
-               .then(() => {
-                  res.json({ message: "El jugador eligio " + choice })
-               });
-         } else {
+              .then(() => {
+                  res.json({ message: "El jugador eligio " + choice, choice:choice })
+              });
+        } else {
             res.status(401).json({ message: "El jugador no se encuentra" });
-         }
+        }
+      });
+});
+
+app.post("/choicecontricante", (req, res) => {
+  const { userIdOnline } = req.body;
+  const { rtdbRoomId } = req.body;
+  const { choiceOnline } = req.body;
+  /*    chequeo si existe el id para ir permitir modificar la rtdbroomid 
+  y setearle lo que eligió*/
+  
+  usersColecction.doc(userIdOnline.toString())
+      .get()
+      .then((idExists) => {
+        	if (idExists.exists) {
+            const rtdbRoomRef = rtdb.ref(`rooms/${rtdbRoomId}/${userIdOnline}`);
+						
+            rtdbRoomRef.update({
+               //le pasa por params lo que eligio el jugador
+							choiceOnline: choiceOnline,
+            })
+              .then(() => {
+                  res.json({ message: "El jugador eligio " + choiceOnline, choiceOnline:choiceOnline })
+              });
+        } else {
+            res.status(401).json({ message: "El jugador no se encuentra" });
+        }
       });
 });
 

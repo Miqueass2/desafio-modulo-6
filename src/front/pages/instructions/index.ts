@@ -97,7 +97,6 @@ class InstructionsPage extends HTMLElement{
          await state.setRtdbPlayerStart();
          await state.setRtdbPlayerStartOnline();
          Router.go("/waitingplayer");
-         /* location.reload(); */
       });
          const handsStyle = this.shadow.querySelector(".hands");
          const shadowHands = handsStyle?.shadowRoot?.children[0]!;

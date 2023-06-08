@@ -3,6 +3,7 @@ import { state } from "./state";
 import { titleComponent } from "./components/title-welcome/index";
 import { buttonComponent } from "./components/button/index";
 import { handsComponent } from "./components/rock-paper-scissors";
+import { counterComponent } from "./components/counter/index";
 /* PAGES */
 import "./pages/home-page/index";
 import "./pages/ing-nombre/index";
@@ -20,6 +21,7 @@ import "./router";
    titleComponent();
    buttonComponent();
    handsComponent();
+   counterComponent();
    /* setTimeout(() => {
       console.log("State desde el index.ts", state.getState())
       console.log("userIdOnline: ", state.getState().infoPlayers.userIdPlayerOnline);
