@@ -1,7 +1,7 @@
 import { rtdb } from "./rtdb";
 import map from "lodash/map";
 import { Router } from "@vaadin/router";
-const API_BASE_URL = process.env.PORT || "http://localhost:2200";
+const API_BASE_URL = process.env.PORT || "http://localhost:3000";
 type Jugada = "piedra" | "papel" | "tijera";
 type Results = "ganaste" | "perdiste" | "empate";
 const state = {

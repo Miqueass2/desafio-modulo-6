@@ -5,7 +5,7 @@ const express = require("express");
 const nanoid_1 = require("nanoid");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const port = process.env.PORT || 2200;
+const port = process.env.PORT || 3000;
 const app = express();
 app.use(express.json());
 app.use(cors());
